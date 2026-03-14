@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Job Item Scanner</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
+
+:root {
+--bg: #0d0d1a;
+--surface: #14142b;
+--card: #1c1c38;
+--border: #2a2a4a;
+--accent: #3b82f6;
+--take-red: #ef4444;
+--return-blue: #3b82f6;
+--success: #22c55e;
+--warning: #f59e0b;
+--text: #e8e8f0;
+--muted: #8888aa;
+--label: #aaaacc;
+--radius: 12px;
+--font-head: 'Rajdhani', sans-serif;
+--font-body: 'Inter', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+height: 100%;
+background: var(--bg);
+color: var(--text);
+font-family: var(--font-body);
+font-size: 15px;
+overscroll-behavior: none;
+}
+
+#app {
+display: flex;
+flex-direction: column;
+height: 100svh;
+max-width: 600px;
+margin: 0 auto;
+background: var(--bg);
+}
+
+/* ── Header ── */
+.app-header {
+background: var(--surface);
+border-bottom: 1px solid var(--border);
+padding: 12px 16px;
+flex-shrink: 0;
+}
+.header-title {
+font-family: var(--font-head);
+font-size: 20px;
+font-weight: 700;
+letter-spacing: 1px;
+color: var(--accent);
+}
+
+/* ── Screens ── */
+.screen { display: none; flex: 1; overflow-y: auto; padding: 16px; }
+.screen.active { display: block; }
+
+/* ── Cards ── */
+.card {
+background: var(--card);
+border: 1px solid var(--border);
+border-radius: var(--radius);
+padding: 16px;
+margin-bottom: 12px;
+}
+.card-title {
+font-family: var(--font-head);
+font-size: 14px;
+letter-spacing: 1.2px;
+text-transform: uppercase;
+color: var(--muted);
+margin-bottom: 12px;
+font-weight: 600;
+}
+
+/* ── Form elements ── */
+label {
+display: block;
+font-size: 11px;
+color: var(--label);
+text-transform: uppercase;
+letter-spacing: 0.8px;
+margin-bottom: 5px;
+margin-top: 12px;
+}
+label:first-child { margin-top: 0; }
+
+input, select {
+width: 100%;
+background: var(--surface);
+border: 1px solid var(--border);
+border-radius: 8px;
+color: var(--text);
+font-family: var(--font-body);
+font-size: 16px;
+padding: 11px 13px;
+outline: none;
+transition: border-color .2s;
+appearance: none;
+-webkit-appearance: none;
+}
+input:focus, select:focus { border-color: var(--accent); }
+input::placeholder { color: var(--muted); }
+select { 
+background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238888aa' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+background-repeat: no-repeat;
+background-position: right 12px center;
+padding-right: 35px;
+}
+
+/* ── Buttons ── */
+.btn {
+width: 100%;
+padding: 14px;
+border: none;
+border-radius: 10px;
+font-family: var(--font-head);
+font-size: 16px;
+font-weight: 700;
+letter-spacing: 1px;
+cursor: pointer;
+transition: all .15s;
+margin-top: 8px;
+}
+.btn:active { transform: scale(0.97); }
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-take { background: var(--take-red); color: #fff; }
+.btn-return { background: var(--return-blue); color: #fff; }
+.btn-success { background: var(--success); color: #fff; }
+.btn-ghost {
+background: transparent;
+border: 1px solid var(--border);
+color: var(--muted);
+font-size: 14px;
+padding: 10px;
+}
+.btn-sm {
+width: auto;
+padding: 8px 16px;
+font-size: 13px;
+margin-top: 0;
+}
+.btn-row { display: flex; gap: 8px; margin-top: 12px; }
+.btn-row .btn { margin-top: 0; flex: 1; }
+
+/* ── Job display ── */
+.job-display {
+background: var(--card);
+border: 2px solid var(--accent);
+border-radius: var(--radius);
+padding: 16px;
+margin-bottom: 16px;
+}
+.job-num {
+font-family: var(--font-head);
+font-size: 28px;
+font-weight: 700;
+color: var(--accent);
+}
+.job-label {
+font-size: 11px;
+color: var(--muted);
+text-transform: uppercase;
+letter-spacing: 1px;
+margin-top: 2px;
+}
+.job-customer {
+font-size: 14px;
+color: var(--text);
+margin-top: 8px;
+font-weight: 500;
+}
+.job-proj {
+font-size: 16px;
+color: var(--accent);
+margin-top: 4px;
+font-weight: 600;
+}
+
+/* ── Personnel display ── */
+.personnel-row {
+display: flex;
+justify-content: space-between;
+gap: 12px;
+margin-top: 12px;
+}
+.person-box {
+flex: 1;
+background: var(--surface);
+border: 1px solid var(--border);
+border-radius: 8px;
+padding: 10px;
+}
+.person-role {
+font-size: 10px;
+color: var(--muted);
+text-transform: uppercase;
+letter-spacing: 0.8px;
+}
+.person-name {
+font-size: 14px;
+color: var(--text);
+font-weight: 600;
+margin-top: 4px;
+}
+
+/* ── Data table ── */
+.data-table {
+width: 100%;
+border-collapse: collapse;
+font-size: 13px;
+margin-top: 12px;
+}
+.data-table th {
+text-align: left;
+color: var(--muted);
+font-size: 10px;
+text-transform: uppercase;
+letter-spacing: 0.8px;
+padding: 8px 6px;
+border-bottom: 1px solid var(--border);
+}
+.data-table td {
+padding: 10px 6px;
+border-bottom: 1px solid rgba(255,255,255,.04);
+}
+.data-table tr:last-child td { border-bottom: none; }
+.data-table input[type="checkbox"] {
+width: auto;
+margin: 0;
+}
+
+/* ── Toast ── */
+#toast {
+position: fixed;
+bottom: 24px;
+left: 50%;
+transform: translateX(-50%) translateY(80px);
+background: #22c55e;
+color: #fff;
+font-family: var(--font-head);
+font-size: 15px;
+letter-spacing: 0.5px;
+padding: 12px 24px;
+border-radius: 50px;
+white-space: nowrap;
+transition: transform .3s cubic-bezier(0.34, 1.56, 0.64, 1);
+z-index: 9999;
+pointer-events: none;
+max-width: 90%;
+text-align: center;
+}
+#toast.show { transform: translateX(-50%) translateY(0); }
+#toast.error { background: var(--take-red); }
+
+/* ── Loading spinner ── */
+.spinner {
+display: inline-block;
+width: 18px; height: 18px;
+border: 2px solid rgba(255,255,255,.2);
+border-top-color: #fff;
+border-radius: 50%;
+animation: spin .6s linear infinite;
+vertical-align: middle;
+margin-right: 6px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.empty-state {
+text-align: center;
+color: var(--muted);
+padding: 40px 20px;
+font-size: 13px;
+}
+
+/* ── File list ── */
+.file-item {
+background: var(--surface);
+border: 1px solid var(--border);
+border-radius: 8px;
+padding: 12px;
+margin-bottom: 8px;
+display: flex;
+justify-content: space-between;
+align-items: center;
+}
+.file-name {
+font-size: 13px;
+color: var(--text);
+font-weight: 500;
+}
+.file-date {
+font-size: 11px;
+color: var(--muted);
+margin-top: 2px;
+}
+.file-link {
+color: var(--accent);
+text-decoration: none;
+font-size: 12px;
+padding: 6px 12px;
+border: 1px solid var(--accent);
+border-radius: 6px;
+}
+
+/* ── Searchable Dropdown ── */
+.dropdown-container {
+position: relative;
+}
+.dropdown-input {
+width: 100%;
+background: var(--surface);
+border: 1px solid var(--border);
+border-radius: 8px;
+color: var(--text);
+font-family: var(--font-body);
+font-size: 16px;
+padding: 11px 13px;
+outline: none;
+cursor: pointer;
+}
+.dropdown-input:focus {
+border-color: var(--accent);
+}
+.dropdown-list {
+position: absolute;
+top: 100%;
+left: 0;
+right: 0;
+background: var(--surface);
+border: 1px solid var(--border);
+border-top: none;
+border-radius: 0 0 8px 8px;
+max-height: 250px;
+overflow-y: auto;
+z-index: 100;
+display: none;
+}
+.dropdown-list.open {
+display: block;
+}
+.dropdown-item {
+display: flex;
+padding: 10px 12px;
+cursor: pointer;
+border-bottom: 1px solid var(--border);
+font-size: 13px;
+}
+.dropdown-item:last-child {
+border-bottom: none;
+}
+.dropdown-item:hover {
+background: var(--card);
+}
+.dropdown-item .col-job {
+width: 60px;
+color: var(--accent);
+font-weight: 600;
+}
+.dropdown-item .col-proj {
+width: 60px;
+color: var(--muted);
+}
+.dropdown-item .col-cust {
+flex: 1;
+color: var(--text);
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+max-width: 200px;
+}
+.dropdown-empty {
+padding: 12px;
+text-align: center;
+color: var(--muted);
+font-size: 13px;
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- Header -->
+<header class="app-header">
+<div class="header-title">JOB ITEM SCANNER</div>
+</header>
+
+<!-- ══ HOME Screen ══ -->
+<div class="screen active" id="screen-home">
+<div class="card">
+<div class="card-title">Main Menu</div>
+<button class="btn btn-primary" onclick="showScreen('job-select')">Job Select</button>
+<button class="btn btn-ghost" onclick="showScreen('menu')">Menu</button>
+<button class="btn btn-ghost" onclick="exitApp()">Exit</button>
+</div>
+</div>
+
+<!-- ══ MENU Screen ══ -->
+<div class="screen" id="screen-menu">
+<div class="card">
+<div class="card-title">Menu Options</div>
+<button class="btn btn-ghost" onclick="showScreen('view-data')">View Data</button>
+<button class="btn btn-ghost" onclick="saveToDrive()">Save for Jobsys</button>
+<button class="btn btn-ghost" onclick="showScreen('saved-files')">View Saved Jobsys Files</button>
+<button class="btn btn-ghost" onclick="showScreen('home')">Close Menu</button>
+<button class="btn btn-ghost" onclick="exitApp()">Exit</button>
+</div>
+</div>
+
+<!-- ══ JOB SELECT Screen ══ -->
+<div class="screen" id="screen-job-select">
+<div class="card">
+<div class="card-title">Job Selection</div>
+<label>Select Job or Project Nr</label>
+<div class="dropdown-container">
+<input type="text" id="jobSearchInput" class="dropdown-input" placeholder="Type to search job or project..." 
+       onclick="toggleJobDropdown()" onkeyup="filterJobDropdown()">
+<div id="jobDropdownList" class="dropdown-list"></div>
+</div>
+</div>
+
+<div id="jobResult" style="display:none;"></div>
+
+<button class="btn btn-ghost" onclick="showScreen('home')">Home</button>
+<button class="btn btn-ghost" onclick="exitApp()">Exit</button>
+</div>
+
+<!-- ══ WHO Screen (Artisan Selection) ══ -->
+<div class="screen" id="screen-who">
+<div class="job-display" id="whoJobDisplay"></div>
+
+<div class="card">
+<div class="card-title">Select Personnel</div>
+<label>Collector (person collecting parts)</label>
+<select id="collectorSelect"></select>
+<div id="issuerSection" style="display:none">
+<label>Issuer / Returner</label>
+<select id="issuerSelect"></select>
+</div>
+</div>
+
+<button class="btn btn-primary" id="continueBtn" onclick="selectCollector()" style="display:block">
+Select Collector
+</button>
+<button class="btn btn-success" id="finalContinueBtn" onclick="goToReturnTake()" style="display:none">
+Continue
+</button>
+
+<div class="btn-row" style="margin-top: 16px;">
+<button class="btn btn-ghost" onclick="showScreen('job-select')">Select Other Job</button>
+</div>
+</div>
+
+<!-- ══ RETURN_TAKE Screen ══ -->
+<div class="screen" id="screen-return-take">
+<div class="card" style="border-color: var(--accent);">
+<div style="display: flex; justify-content: space-between; align-items: baseline;">
+<div>
+<span style="font-size: 11px; color: var(--muted); text-transform: uppercase;">Job</span>
+<span id="rtJobNum" style="font-size: 20px; font-weight: 700; color: var(--accent); margin-left: 8px;">—</span>
+</div>
+<div>
+<span style="font-size: 11px; color: var(--muted); text-transform: uppercase;">Project</span>
+<span id="rtProjNum" style="font-size: 20px; font-weight: 700; color: var(--accent); margin-left: 8px;">—</span>
+</div>
+</div>
+<div id="rtCustomer" style="margin-top: 8px; font-size: 13px; color: var(--text);"></div>
+
+<div class="personnel-row">
+<div class="person-box">
+<div class="person-role">Collector</div>
+<div class="person-name" id="rtCollector">—</div>
+</div>
+<div class="person-box">
+<div class="person-role">Issue/Returner</div>
+<div class="person-name" id="rtIssuer">—</div>
+</div>
+</div>
+</div>
+
+<div class="btn-row">
+<button class="btn btn-ghost" onclick="showScreen('view-data')">View Data</button>
+<button class="btn btn-ghost" onclick="showScreen('job-select')">New Job</button>
+<button class="btn btn-ghost" onclick="showScreen('menu')">Menu</button>
+</div>
+
+<div class="btn-row" style="margin-top: 16px;">
+<button class="btn btn-return" onclick="showItemScreen('RETURN')">RETURN ITEMS</button>
+<button class="btn btn-take" onclick="showItemScreen('TAKE')">TAKE ITEMS</button>
+</div>
+</div>
+
+<!-- ══ ITEM INPUT Screen (RETURN or TAKE) ══ -->
+<div class="screen" id="screen-item">
+<div class="card" id="itemCard">
+<div class="card-title" id="itemCardTitle">—</div>
+<div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+<span style="font-size: 12px; color: var(--muted);">Job: <span id="itemJobNum"></span></span>
+<span style="font-size: 12px; color: var(--muted);">Project: <span id="itemProjNum"></span></span>
+</div>
+
+<label>Barcode</label>
+<input type="text" id="barcodeInput" placeholder="Scan or type barcode" autofocus>
+
+<label>How many Items?</label>
+<input type="number" id="quantityInput" placeholder="0" min="1" value="1" inputmode="numeric">
+
+<div class="btn-row">
+<button class="btn btn-ghost" onclick="showScreen('return-take')">Cancel</button>
+<button class="btn" id="itemSubmitBtn" onclick="submitItem()">Submit</button>
+</div>
+</div>
+</div>
+
+<!-- ══ VIEW DATA Screen ══ -->
+<div class="screen" id="screen-view-data">
+<div class="card">
+<div class="card-title">Transaction Data</div>
+<div id="dataTableContainer"></div>
+</div>
+<button class="btn btn-ghost" onclick="deleteSelected()">Delete Selected</button>
+<button class="btn btn-ghost" onclick="showScreen('return-take')">Back</button>
+</div>
+
+<!-- ══ SAVED FILES Screen ══ -->
+<div class="screen" id="screen-saved-files">
+<div class="card">
+<div class="card-title">Saved Jobsys Files</div>
+<div id="filesListContainer"></div>
+</div>
+<button class="btn btn-ghost" onclick="showScreen('menu')">Back to Menu</button>
+</div>
+
+</div><!-- /app -->
+
+<div id="toast"></div>
+
+<script>
+// ════════════════════════════════════════════════════════════
+// CONFIGURATION
+// PASTE YOUR WEB APP URL HERE AFTER DEPLOYMENT
+// ════════════════════════════════════════════════════════════
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwVuexLatmABALE1S5Vk98ixV3UR6JHdXLYaXphUEWMFRpk4vqdR8OxekNiE24h2KyG/exec"; // ← PASTE YOUR DEPLOYMENT URL HERE
+
+// ── State ────────────────────────────────────────────────────
+const state = {
+job: null,
+collector: null,
+issuer: null,
+currentAction: null, // "TAKE" or "RETURN"
+allJobs: []
+};
+
+// ── Job Dropdown Functions ───────────────────────────────────
+async function loadJobsForDropdown() {
+try {
+const data = await api("getJobs");
+state.allJobs = data.jobs;
+renderJobDropdown(state.allJobs);
+} catch(e) {
+console.error("Failed to load jobs:", e);
+}
+}
+
+function renderJobDropdown(jobs) {
+const dropdown = document.getElementById("jobDropdownList");
+if (!jobs || jobs.length === 0) {
+dropdown.innerHTML = '<div class="dropdown-empty">No jobs found</div>';
+return;
+}
+
+let html = '';
+jobs.forEach(j => {
+const cust = j.CUSTOMER.length > 40 ? j.CUSTOMER.substring(0, 40) + '...' : j.CUSTOMER;
+html += `<div class="dropdown-item" onclick="selectJob('${j.JOBNO}', '${j.LINENO}', '${j.CUSTOMER.replace(/'/g, "\\'")}')">
+<span class="col-job">${j.JOBNO}</span>
+<span class="col-proj">${j.LINENO}</span>
+<span class="col-cust">${cust}</span>
+</div>`;
+});
+dropdown.innerHTML = html;
+}
+
+function toggleJobDropdown() {
+const dropdown = document.getElementById("jobDropdownList");
+if (dropdown.classList.contains('open')) {
+dropdown.classList.remove('open');
+} else {
+if (state.allJobs.length === 0) {
+loadJobsForDropdown();
+}
+dropdown.classList.add('open');
+filterJobDropdown();
+}
+}
+
+function filterJobDropdown() {
+const query = document.getElementById("jobSearchInput").value.toLowerCase().trim();
+const dropdown = document.getElementById("jobDropdownList");
+dropdown.classList.add('open');
+
+if (!query) {
+renderJobDropdown(state.allJobs);
+return;
+}
+
+const filtered = state.allJobs.filter(j => 
+j.JOBNO.includes(query) || 
+j.LINENO.includes(query) || 
+j.CUSTOMER.toLowerCase().includes(query)
+);
+renderJobDropdown(filtered);
+}
+
+function selectJob(jobNo, projNo, customer) {
+document.getElementById("jobSearchInput").value = jobNo;
+document.getElementById("jobDropdownList").classList.remove('open');
+document.getElementById("jobResult").innerHTML = '';
+
+state.job = null;
+
+const job = {
+JOBNO: jobNo,
+LINENO: projNo,
+CUSTOMER: customer
+};
+displayJobResult(job);
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(e) {
+const container = document.querySelector('.dropdown-container');
+if (container && !container.contains(e.target)) {
+document.getElementById("jobDropdownList").classList.remove('open');
+}
+});
+
+// ── API helper ───────────────────────────────────────────────
+async function api(action, params = {}) {
+if (!SCRIPT_URL) {
+showToast("ERROR: Script URL not configured", true);
+throw new Error("SCRIPT_URL not configured");
+}
+const res = await fetch(SCRIPT_URL, {
+method: "POST",
+body: JSON.stringify({ action, ...params }),
+});
+const data = await res.json();
+if (data.status === "error") throw new Error(data.message);
+return data;
+}
+
+// ── Screen management ─────────────────────────────────────────
+function showScreen(screenName) {
+document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+document.getElementById("screen-" + screenName).classList.add("active");
+
+// Auto-load data for certain screens
+if (screenName === "view-data") loadViewData();
+if (screenName === "saved-files") loadSavedFiles();
+if (screenName === "job-select") {
+loadJobsForDropdown();
+document.getElementById("jobSearchInput").value = "";
+const jobResult = document.getElementById("jobResult");
+jobResult.innerHTML = "";
+jobResult.style.display = "none";
+state.job = null;
+}
+}
+
+// ── Job search ────────────────────────────────────────────────
+async function searchJob() {
+const query = document.getElementById("jobSearchInput").value.trim();
+if (!query) {
+showToast("Please enter a job or project number", true);
+return;
+}
+
+document.getElementById("jobResult").innerHTML = 
+`<div class="empty-state"><div class="spinner"></div> Searching...</div>`;
+document.getElementById("jobResult").style.display = 'block';
+
+try {
+const data = await api("searchJob", { query });
+displayJobResult(data.job);
+} catch(e) {
+showToast(e.message, true);
+const jobResult = document.getElementById("jobResult");
+jobResult.innerHTML = "";
+jobResult.style.display = "none";
+}
+}
+
+function displayJobResult(job) {
+state.job = job;
+
+const html = `
+<div class="card" style="border-color: var(--success);">
+<div style="font-size: 24px; font-weight: 700; color: var(--success); margin-bottom: 8px;">
+${job.JOBNO}
+</div>
+<div style="font-size: 12px; color: var(--muted); margin-bottom: 4px;">Job Number</div>
+<div style="font-size: 16px; color: var(--text); font-weight: 500; margin-top: 12px;">
+${job.CUSTOMER}
+</div>
+<div style="font-size: 12px; color: var(--muted); margin-top: 8px;">Project Number</div>
+<div style="font-size: 20px; font-weight: 700; color: var(--accent); margin-top: 4px;">
+${job.LINENO}
+</div>
+<button class="btn btn-success" onclick="confirmJob()">CONFIRM</button>
+</div>
+`;
+const jobResult = document.getElementById("jobResult");
+jobResult.innerHTML = html;
+jobResult.style.display = 'block';
+}
+
+async function confirmJob() {
+// Load artisans
+try {
+const data = await api("getArtisans");
+populateArtisanDropdowns(data.artisans);
+updateWhoDisplay();
+showScreen("who");
+} catch(e) {
+showToast(e.message, true);
+}
+}
+
+function populateArtisanDropdowns(artisans) {
+const collectorSelect = document.getElementById("collectorSelect");
+const issuerSelect = document.getElementById("issuerSelect");
+
+const options = '<option value="">-- Select --</option>' + 
+artisans.map(a => `<option value="${a}">${a}</option>`).join("");
+
+collectorSelect.innerHTML = options;
+issuerSelect.innerHTML = options;
+}
+
+function updateWhoDisplay() {
+const html = `
+<div style="display: flex; justify-content: space-between; align-items: baseline;">
+<span style="font-size: 11px; color: var(--muted); text-transform: uppercase;">Job</span>
+<span style="font-size: 24px; font-weight: 700; color: var(--accent);">${state.job.JOBNO}</span>
+</div>
+<div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 4px;">
+<span style="font-size: 11px; color: var(--muted); text-transform: uppercase;">Project</span>
+<span style="font-size: 24px; font-weight: 700; color: var(--accent);">${state.job.LINENO}</span>
+</div>
+<div style="font-size: 14px; color: var(--text); margin-top: 12px; font-weight: 500;">
+${state.job.CUSTOMER}
+</div>
+`;
+document.getElementById("whoJobDisplay").innerHTML = html;
+}
+
+function selectCollector() {
+const collector = document.getElementById("collectorSelect").value;
+if (!collector) {
+showToast("Please select a collector", true);
+return;
+}
+state.collector = collector;
+
+// Show issuer section
+document.getElementById("issuerSection").style.display = "block";
+document.getElementById("continueBtn").style.display = "none";
+document.getElementById("finalContinueBtn").style.display = "block";
+
+showToast("Collector selected: " + collector);
+}
+
+function goToReturnTake() {
+const issuer = document.getElementById("issuerSelect").value;
+if (!issuer) {
+showToast("Please select an issuer", true);
+return;
+}
+state.issuer = issuer;
+
+// Update RETURN_TAKE screen
+document.getElementById("rtJobNum").textContent = state.job.JOBNO;
+document.getElementById("rtProjNum").textContent = state.job.LINENO;
+document.getElementById("rtCustomer").textContent = state.job.CUSTOMER;
+document.getElementById("rtCollector").textContent = state.collector;
+document.getElementById("rtIssuer").textContent = state.issuer;
+
+showScreen("return-take");
+}
+
+// ── Item input (RETURN/TAKE) ──────────────────────────────────
+function showItemScreen(action) {
+state.currentAction = action;
+
+const itemCard = document.getElementById("itemCard");
+const itemCardTitle = document.getElementById("itemCardTitle");
+const itemSubmitBtn = document.getElementById("itemSubmitBtn");
+
+if (action === "RETURN") {
+itemCard.style.borderColor = "var(--return-blue)";
+itemCardTitle.textContent = "RETURN ITEMS";
+itemCardTitle.style.color = "var(--return-blue)";
+itemSubmitBtn.className = "btn btn-return";
+itemSubmitBtn.textContent = "Submit Return";
+} else {
+itemCard.style.borderColor = "var(--take-red)";
+itemCardTitle.textContent = "TAKE ITEMS";
+itemCardTitle.style.color = "var(--take-red)";
+itemSubmitBtn.className = "btn btn-take";
+itemSubmitBtn.textContent = "Submit Take";
+}
+
+document.getElementById("itemJobNum").textContent = state.job.JOBNO;
+document.getElementById("itemProjNum").textContent = state.job.LINENO;
+document.getElementById("barcodeInput").value = "";
+document.getElementById("quantityInput").value = "1";
+
+showScreen("item");
+
+// Auto-focus barcode input
+setTimeout(() => {
+document.getElementById("barcodeInput").focus();
+}, 100);
+}
+
+async function submitItem() {
+const barcode = document.getElementById("barcodeInput").value.trim();
+const quantity = parseInt(document.getElementById("quantityInput").value, 10);
+
+if (!barcode) {
+showToast("Please enter a barcode", true);
+return;
+}
+if (!quantity || quantity <= 0) {
+showToast("Please enter a valid quantity", true);
+return;
+}
+
+// For RETURN, make quantity negative
+const finalQuantity = state.currentAction === "RETURN" ? -quantity : quantity;
+
+try {
+const btn = document.getElementById("itemSubmitBtn");
+btn.disabled = true;
+btn.innerHTML = `<span class="spinner"></span> Saving...`;
+
+await api("submitTransaction", {
+jobNumber: state.job.JOBNO,
+projectNumber: state.job.LINENO,
+collector: state.collector,
+issuer: state.issuer,
+barcode: barcode,
+quantity: finalQuantity
+});
+
+showToast(`${state.currentAction}: ${barcode} (${Math.abs(finalQuantity)})`);
+showScreen("return-take");
+} catch(e) {
+showToast(e.message, true);
+} finally {
+const btn = document.getElementById("itemSubmitBtn");
+btn.disabled = false;
+if (state.currentAction === "RETURN") {
+btn.className = "btn btn-return";
+btn.textContent = "Submit Return";
+} else {
+btn.className = "btn btn-take";
+btn.textContent = "Submit Take";
+}
+}
+}
+
+// ── View Data ─────────────────────────────────────────────────
+async function loadViewData() {
+document.getElementById("dataTableContainer").innerHTML = 
+`<div class="empty-state"><div class="spinner"></div> Loading...</div>`;
+
+try {
+const data = await api("getTransactions");
+displayDataTable(data.transactions);
+} catch(e) {
+showToast(e.message, true);
+}
+}
+
+function displayDataTable(transactions) {
+if (!transactions || transactions.length === 0) {
+document.getElementById("dataTableContainer").innerHTML = 
+`<div class="empty-state">No data found</div>`;
+return;
+}
+
+let html = `
+<table class="data-table">
+<thead>
+<tr>
+<th><input type="checkbox" id="selectAll" onclick="toggleSelectAll()"></th>
+<th>Job Nr</th>
+<th>From</th>
+<th>To</th>
+<th>Item</th>
+<th>Qty</th>
+<th>MMMdd</th>
+<th>Proj Nr</th>
+</tr>
+</thead>
+<tbody>
+`;
+
+transactions.forEach(t => {
+const dateParts = t["INOUTQTIME"] ? t["INOUTQTIME"].split('_')[0] : '';
+const mmmdd = dateParts ? dateParts.substring(5) : '';
+html += `
+<tr>
+<td><input type="checkbox" class="row-select" data-row="${t.rowIndex}"></td>
+<td>${t["Job Number"]}</td>
+<td>-</td>
+<td>${t["Issued To"]}</td>
+<td>${t["ItemCode / Barcode"]}</td>
+<td>${t["Quantity Issued"]}</td>
+<td>${mmmdd}</td>
+<td>${t["Project Number"]}</td>
+</tr>
+`;
+});
+
+html += `</tbody></table>`;
+document.getElementById("dataTableContainer").innerHTML = html;
+}
+
+function toggleSelectAll() {
+const selectAll = document.getElementById("selectAll");
+const checkboxes = document.querySelectorAll(".row-select");
+checkboxes.forEach(cb => cb.checked = selectAll.checked);
+}
+
+async function deleteSelected() {
+const checkboxes = document.querySelectorAll(".row-select:checked");
+if (checkboxes.length === 0) {
+showToast("No rows selected", true);
+return;
+}
+
+if (!confirm(`Delete ${checkboxes.length} selected row(s)?`)) {
+return;
+}
+
+try {
+for (let cb of checkboxes) {
+const rowIndex = parseInt(cb.dataset.row);
+await api("deleteTransaction", { rowIndex });
+}
+showToast(`Deleted ${checkboxes.length} row(s)`);
+loadViewData();
+} catch(e) {
+showToast(e.message, true);
+}
+}
+
+// ── Save to Drive ─────────────────────────────────────────────
+async function saveToDrive() {
+if (!confirm("Save current data to Drive as CSV file?")) {
+return;
+}
+
+try {
+showToast("Saving...");
+const data = await api("saveToDrive");
+showToast("File saved: " + data.fileName);
+showScreen("menu");
+} catch(e) {
+showToast(e.message, true);
+}
+}
+
+// ── Load saved files ──────────────────────────────────────────
+async function loadSavedFiles() {
+document.getElementById("filesListContainer").innerHTML = 
+`<div class="empty-state"><div class="spinner"></div> Loading...</div>`;
+
+try {
+await api("updateFileLists");
+const response = await api("getFileListsFromSheets");
+console.log("File lists response:", response);
+
+if (response.status === "error") {
+  throw new Error(response.message);
+}
+
+displayFileLists(response.data || { importCombined: [], savedJobsys: [] });
+} catch(e) {
+console.error("Error loading files:", e);
+document.getElementById("filesListContainer").innerHTML = 
+`<div class="empty-state" style="color:red;">Error: ${e.message}</div>`;
+}
+}
+
+function displayFileLists(data) {
+let html = '';
+
+// Import_Combined section
+if (data.importCombined && data.importCombined.length > 0) {
+  html += '<h3 style="color:#3b82f6;margin:20px 0 10px 0;">Import_Combined</h3>';
+  html += data.importCombined.map(f => `
+  <div class="file-item">
+    <div>
+      <div class="file-name">${f[0]}</div>
+      <div class="file-date">${f[2]}</div>
+    </div>
+  </div>
+  `).join('');
+}
+
+// Saved_Jobsys_files section
+if (data.savedJobsys && data.savedJobsys.length > 0) {
+  html += '<h3 style="color:#3b82f6;margin:20px 0 10px 0;">Saved_Jobsys_files</h3>';
+  html += data.savedJobsys.map(f => `
+  <div class="file-item">
+    <div>
+      <div class="file-name">${f[0]}</div>
+      <div class="file-date">${f[2]}</div>
+    </div>
+  </div>
+  `).join('');
+}
+
+if (!html) {
+  html = '<div class="empty-state">No files found</div>';
+}
+
+document.getElementById("filesListContainer").innerHTML = html;
+}
+
+// ── Toast notification ────────────────────────────────────────
+function showToast(msg, isError = false) {
+const t = document.getElementById("toast");
+t.textContent = msg;
+t.className = "show" + (isError ? " error" : "");
+clearTimeout(t._timer);
+t._timer = setTimeout(() => { t.className = ""; }, 2800);
+}
+
+function exitApp() {
+if (confirm('Exit application?')) {
+document.getElementById("app").innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#0d0d1a;color:#888;text-align:center;padding:20px;"><div><h2 style="color:#3b82f6;font-family:var(--font-head);">RAM PARTS</h2><p>Application closed.</p></div></div>';
+}
+}
+
+window.onload = () => {
+if (!SCRIPT_URL) {
+showToast("⚠ SCRIPT_URL not configured in Index.html", true);
+}
+};
+</script>
+</body>
+</html>

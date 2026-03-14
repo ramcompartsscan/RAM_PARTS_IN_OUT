@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+  </head>
+  <body>
+    # Job Item Scanner - Apps Script Web App
+
+A mobile-friendly web app for scanning items in/out of jobs with barcode support.
+
+## Features
+
+- Job selection by Job Number or Project Number
+- Personnel (Collector/Issuer) selection
+- Item scanning with barcode input
+- TAKE and RETURN item tracking
+- Transaction data viewing with delete functionality
+- CSV export to Google Drive
+- View saved CSV files
+
+## Setup Instructions
+
+### 1. Create Google Sheet Structure
+
+1. Open or create your Google Sheet with ID: `1DiMVz57DaV0IT-F_ik4dQvHiO-1P65i2n2TUT_yMgko`
+2. Create a Google Drive folder for CSV files (or use existing: `15pPXnlsetx2t7YaiVnqBvh4d6XBFfz6V`)
+
+### 2. Deploy Apps Script
+
+1. Go to [script.google.com](https://script.google.com)
+2. Create **New Project**
+3. Name it "Job Item Scanner"
+4. Delete the default `Code.gs` content
+5. Paste the contents of `Code.gs` (from this folder)
+6. Click **+** next to Files → **HTML** → Name it "Index"
+7. Delete the default HTML content
+8. Paste the contents of `Index.html` (from this folder)
+
+### 3. Configure Settings
+
+In `Code.gs`, update the CONFIG object (lines 13-17):
+
+```javascript
+const CONFIG = {
+  SPREADSHEET_ID: 'YOUR_SPREADSHEET_ID_HERE',
+  DRIVE_FOLDER_ID: 'YOUR_DRIVE_FOLDER_ID_HERE',
+  TIMEZONE: 'GMT+2'
+};
+```
+
+### 4. Run Initial Setup
+
+1. In Apps Script, select the function `setupSheets` from the dropdown
+2. Click **Run**
+3. Authorize the script when prompted
+4. Check your Google Sheet - it should now have these sheets:
+   - CRUDII
+   - JobCusProjTask
+   - Artisans
+   - csvdata
+   - JSlist
+
+### 5. Deploy as Web App
+
+1. Click **Deploy** → **New deployment**
+2. Click the gear icon ⚙️ → Select **Web app**
+3. Fill in:
+   - **Description**: "Job Scanner v1"
+   - **Execute as**: Me
+   - **Who has access**: Anyone
+4. Click **Deploy**
+5. **Copy the Web App URL**
+
+### 6. Configure Frontend
+
+1. In Apps Script, open `Index.html`
+2. Find line ~428: `const SCRIPT_URL = "";`
+3. Paste your Web App URL between the quotes:
+   ```javascript
+   const SCRIPT_URL = "https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec";
+   ```
+4. Save (Ctrl+S or Cmd+S)
+
+### 7. Redeploy
+
+1. Click **Deploy** → **Manage deployments**
+2. Click the edit icon (pencil) ✏️
+3. Change **Version** to "New version"
+4. Click **Deploy**
+5. Use the same Web App URL (no need to update Index.html again)
+
+### 8. Test the App
+
+1. Open the Web App URL in your browser (or mobile device)
+2. Click "Job Select"
+3. Enter a job number (e.g., 37377) or project number (e.g., 91193)
+4. Select personnel and start scanning items
+
+## Usage Flow
+
+### Main Workflow
+
+1. **Home** → Click "Job Select"
+2. **Job Select** → Enter job/project number → Search → Confirm
+3. **Who** → Select Collector → Select Issuer → Continue
+4. **Return/Take** → Choose "RETURN ITEMS" or "TAKE ITEMS"
+5. **Item Input** → Scan/enter barcode → Enter quantity → Submit
+6. Repeat step 5 for more items
+
+### Menu Options
+
+- **View Data**: See all transactions with ability to delete
+- **Save for Jobsys**: Export current data to CSV file in Drive
+- **View Saved Files**: Browse previously saved CSV files
+- **Exit**: Return to home
+
+## Sheet Structure
+
+### CRUDII (Main transaction log)
+- Job Number
+- Allocation Reference
+- Issued To
+- ItemCode / Barcode
+- Quantity Issued (negative for returns)
+- INOUTQTIME (timestamp)
+- Project Number
+
+### JobCusProjTask (Job master data)
+- LINENO (Project Number)
+- JOBNO (Job Number)
+- CODE
+- DESCRIPTION
+- CUSTOMER
+
+### Artisans (Personnel list)
+- Name
+
+### csvdata (Temporary CSV export data)
+- Auto-generated from CRUDII data
+- Formatted for Jobsys import
+
+### JSlist (File counter)
+- F1: Next file number (auto-increments)
+
+## CSV File Naming
+
+Format: `00001_APP1_2026_03_09_1430.csv`
+
+- `00001`: Sequential number from JSlist!F1
+- `APP1`: App identifier
+- `2026_03_09_1430`: Date and time stamp
+
+## Customization
+
+### Adding Artisans
+
+1. Open your Google Sheet
+2. Go to "Artisans" sheet
+3. Add names in column A (below the header)
+
+### Adding Jobs
+
+1. Go to "JobCusProjTask" sheet
+2. Add rows with: LINENO, JOBNO, CODE, DESCRIPTION, CUSTOMER
+
+### Changing Colors
+
+In `Index.html`, modify the CSS variables (lines 10-20):
+
+```css
+:root {
+  --take-red: #ef4444;      /* TAKE button color */
+  --return-blue: #3b82f6;   /* RETURN button color */
+  --accent: #3b82f6;        /* Primary accent color */
+  /* etc. */
+}
+```
+
+## Troubleshooting
+
+### "SCRIPT_URL not configured" error
+- Make sure you pasted the Web App URL in Index.html line ~428
+- Redeploy after making changes
+
+### "Permission denied" errors
+- Re-run the authorization flow
+- Ensure the script has access to Google Drive and Sheets
+
+### CSV not saving
+- Check that DRIVE_FOLDER_ID in Code.gs is correct
+- Ensure you have write permissions to that folder
+
+### Data not loading
+- Verify SPREADSHEET_ID in Code.gs matches your sheet
+- Check that setupSheets() ran successfully
+
+## Support
+
+For issues or questions, review the code comments or check:
+- Apps Script execution logs (View → Logs)
+- Browser console (F12 → Console tab)
+
+## Version History
+
+- v1.0: Initial release
+  - Job selection
+  - Item scanning (take/return)
+  - CSV export
+  - Transaction management
+
+  </body>
+</html>
