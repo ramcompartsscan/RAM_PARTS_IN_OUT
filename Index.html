@@ -120,16 +120,16 @@ padding-right: 35px;
 /* ── Buttons ── */
 .btn {
 width: 100%;
-padding: 14px;
+padding: 56px 14px; /* 200% taller increase */
 border: none;
-border-radius: 10px;
+border-radius: 12px;
 font-family: var(--font-head);
-font-size: 16px;
+font-size: 24px; /* Larger text for the huge buttons */
 font-weight: 700;
-letter-spacing: 1px;
+letter-spacing: 2px;
 cursor: pointer;
 transition: all .15s;
-margin-top: 8px;
+margin-top: 16px;
 }
 .btn:active { transform: scale(0.97); }
 .btn-primary { background: var(--accent); color: #fff; }
@@ -140,8 +140,6 @@ margin-top: 8px;
 background: transparent;
 border: 1px solid var(--border);
 color: var(--muted);
-font-size: 14px;
-padding: 10px;
 }
 .btn-sm {
 width: auto;
